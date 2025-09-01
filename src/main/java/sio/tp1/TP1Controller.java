@@ -13,17 +13,16 @@ import java.util.HashMap;
 import java.util.ResourceBundle;
 
 public class TP1Controller implements Initializable {
-
     @FXML
     private Button cmdEnvoyer;
     @FXML
     private Button cmdRecevoir;
     @FXML
+    private Button cmdEnvoyerMessage;
+    @FXML
     private AnchorPane apEnvoyer;
     @FXML
     private AnchorPane apRecevoir;
-    @FXML
-    private Label lblTitre;
     @FXML
     private ListView lstExpediteurs;
     @FXML
@@ -31,23 +30,21 @@ public class TP1Controller implements Initializable {
     @FXML
     private TextField txtMessage;
     @FXML
-    private Button cmdEnvoyerMessage;
-
-    private HashMap<String, ArrayList<Message>> maMessagerie;
+    private Label lblTitre;
     @FXML
     private ComboBox cboDestinataires;
     @FXML
     private TreeView tvMessages;
+    @FXML
+    private HashMap<String, ArrayList<Message>> maMessagerie;
 
     @FXML
     public void menuClicked(Event event) {
-        if(event.getSource() == cmdEnvoyer)
-        {
+        if(event.getSource() == cmdEnvoyer) {
             lblTitre.setText("TP1 : Messagerie / Envoyer");
             apEnvoyer.toFront();
         }
-        else//if(event.getSource() == cmdRecevoir)
-        {
+        else {
             lblTitre.setText("TP1 : Messagerie / Recevoir");
             apRecevoir.toFront();
         }
@@ -66,7 +63,30 @@ public class TP1Controller implements Initializable {
 
     @FXML
     public void cmdEnvoyerMessageClicked(Event event) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Erreur de l'envoi");
+        alert.setHeaderText("");
+        if(lstExpediteurs.getSelectionModel().getSelectedItem() == null) {
+            alert.setContentText("Veuillez sélectionner un expéditeur.");
+            alert.showAndWait();
+        } else if (lstDestinataires.getSelectionModel().getSelectedItem() == null) {
+            alert.setContentText("Veuillez sélectionner un destinataire.");
+            alert.showAndWait();
+        } else if (txtMessage.getText().isEmpty()) {
+            alert.setContentText("Veuillez saisir un message.");
+            alert.showAndWait();
+        } else {
+            String selectedExpediteur = lstExpediteurs.getSelectionModel().getSelectedItem().toString();
+            String selectedDestinataire = lstDestinataires.getSelectionModel().getSelectedItem().toString();
 
+            if (!maMessagerie.containsKey(selectedDestinataire)) {
+                ArrayList<Message> messages = new ArrayList<>();
+                maMessagerie.put(selectedDestinataire, messages);
+            }
+
+            Message message = new Message(selectedExpediteur, selectedDestinataire, txtMessage.getText());
+            maMessagerie.get(selectedDestinataire).add(message);
+        }
     }
 
     @FXML
